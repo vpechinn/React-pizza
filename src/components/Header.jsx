@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import Search from "./Search";
 
 function Header() {
   return (
@@ -14,6 +15,7 @@ function Header() {
             </div>
           </div>
         </Link>
+        <Search></Search>
         <div className="header__cart">
           <a href="/cart.html" class="button button--cart">
             <span>520 ₽</span>

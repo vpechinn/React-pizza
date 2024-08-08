@@ -1,41 +1,46 @@
-import React, {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Index from "../components/PizzaBlock";
 
+import {SearchContext} from "../App";
+import {setActiveSort, setIndexCategory} from "../redux/slices/filterSlice";
+
+
 function Home() {
+    const {indexCategory, activeSort} = useSelector((state) => state.filterSlice);
+    const dispatch = useDispatch();
+    const {searchValue} = useContext(SearchContext)
     const [items, setItems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    const [indexCategory, setIndexCategory] = useState(0)
-    const [activeSort, setActiveSort] = useState({
-        name: 'популярности',
-        sortProperty: 'rating'
-    })
 
     let category =  indexCategory > 0 ?  `category=${indexCategory}` : ''
-    let sortBy = `${activeSort.sortProperty.replace('-', ' ')}`
+    let sortBy = `${activeSort.sortProperty.replace('-', '')}`
     let order = activeSort.sortProperty.includes('-') ? 'desc' : 'asc'
 
     useEffect(() => {
         setIsLoading(true)
-        fetch(`https://66aa4067613eced4eba82fcb.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}`)
+        fetch(`https://66aa4067613eced4eba82fcb.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}&search=${searchValue}`)
             .then(res => res.json()).then(data => {
             setItems(data)
             setIsLoading(false)
         })
-    }, [category, sortBy, order]);
+    }, [category, sortBy, order, searchValue]);
 
+    const pizzas = items.map((item, i) => <Index key={item.id} {...item} />)
+    const skeleton = [...Array(6)].map((_, index) => <Skeleton key={index}/>)
     return (
         <>
             <div className="content__top">
-                <Categories indexCategory={indexCategory} setIndexCategory={(i) => setIndexCategory(i)}/>
-                <Sort value={activeSort} setActiveSort={(i) => setActiveSort(i)}/>
+                <Categories indexCategory={indexCategory} setIndexCategory={(i) => dispatch(setIndexCategory(i))} />
+                <Sort value={activeSort} setActiveSort={(i) => dispatch(setActiveSort(i))}/>
             </div>
             <h2 className="content__title">Все пиццы</h2>
             <div className="content__items">
-                {isLoading ? [...Array(6)].map((_, index) => <Skeleton key={index}/>) : items.map(item => <Index
-                    key={item.id} {...item} />)}
+                    {isLoading ? skeleton : pizzas}
             </div>
         </>
     )

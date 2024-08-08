@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 
 function Sort({value, setActiveSort}) {
+
     const sortList = [
         {name: 'популярности', sortProperty: 'rating'},
         {name: 'популярности (убыв)', sortProperty: '-rating'},
