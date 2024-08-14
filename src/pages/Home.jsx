@@ -8,7 +8,7 @@ import Index from "../components/PizzaBlock";
 
 import {SearchContext} from "../App";
 import {setActiveSort, setIndexCategory} from "../redux/slices/filterSlice";
-
+import axios from "axios";
 
 function Home() {
     const {indexCategory, activeSort} = useSelector((state) => state.filterSlice);
@@ -23,11 +23,13 @@ function Home() {
 
     useEffect(() => {
         setIsLoading(true)
-        fetch(`https://66aa4067613eced4eba82fcb.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}&search=${searchValue}`)
-            .then(res => res.json()).then(data => {
-            setItems(data)
+        axios.get(`https://66aa4067613eced4eba82fcb.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}&search=${searchValue}`)
+           .then(res => {
+            setItems(res.data)
             setIsLoading(false)
         })
+            .catch(err =>  console.log(err))
+
     }, [category, sortBy, order, searchValue]);
 
     const pizzas = items.map((item, i) => <Index key={item.id} {...item} />)
