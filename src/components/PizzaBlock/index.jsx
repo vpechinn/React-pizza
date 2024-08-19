@@ -1,9 +1,26 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from '../../redux/slices/cartSlice';
 
-function Index({title, price, types, sizes}) {
-    const [activeType, setActiveType] = useState(0)
-    const [activeSize, setActiveSize] = useState(0)
-    const forms = ['тонкая', 'традиционная']
+function Index({ id, title, price, types, sizes }) {
+  const [activeType, setActiveType] = useState(0);
+  const [activeSize, setActiveSize] = useState(0);
+  const cartItem = useSelector((state) => state.cart.items.find((obj) => obj.id === id));
+  const dispatch = useDispatch();
+  const forms = ['тонкая', 'традиционная'];
+  const addedItem = cartItem ? cartItem.count : 0;
+
+  const addPizzaClick = () => {
+    const item = {
+      id,
+      title,
+      price,
+      type: forms[activeType],
+      size: activeSize,
+      count: addedItem,
+    };
+    dispatch(addItem(item));
+  };
 
   return (
     <div className="pizza-block">
@@ -15,19 +32,29 @@ function Index({title, price, types, sizes}) {
       <h4 className="pizza-block__title">{title}</h4>
       <div className="pizza-block__selector">
         <ul>
-            {types.map((type, index) => (
-                <li onClick={() => setActiveType(index)} className={activeType === index ? 'active' : ''} key={index}>{forms[type]}</li>
-            ))}
+          {types.map((type, index) => (
+            <li
+              onClick={() => setActiveType(index)}
+              className={activeType === index ? 'active' : ''}
+              key={index}>
+              {forms[type]}
+            </li>
+          ))}
         </ul>
         <ul>
-            {sizes.map((size, index)  => (
-                <li onClick={() => setActiveSize(index)} className={activeSize === index ? 'active' : ''} key={index}>{size} см.</li>
-            ))}
+          {sizes.map((size, index) => (
+            <li
+              onClick={() => setActiveSize(index)}
+              className={activeSize === index ? 'active' : ''}
+              key={index}>
+              {size} см.
+            </li>
+          ))}
         </ul>
       </div>
       <div className="pizza-block__bottom">
         <div className="pizza-block__price">от {price} ₽</div>
-        <div className="button button--outline button--add">
+        <div className="button button--outline button--add" onClick={addPizzaClick}>
           <svg
             width="12"
             height="12"
@@ -40,7 +67,7 @@ function Index({title, price, types, sizes}) {
             />
           </svg>
           <span>Добавить</span>
-          <i>0</i>
+          <i>{addedItem}</i>
         </div>
       </div>
     </div>

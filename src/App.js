@@ -5,6 +5,7 @@ import {Routes, Route} from "react-router-dom"
 
 import './scss/app.scss';
 import NotFoundBlock from "./components/NotFoundBlock";
+import Cart from "./pages/Cart";
 
 export const SearchContext = createContext()
 
@@ -20,6 +21,7 @@ function App() {
               <div className="container">
                   <Routes>
                       <Route path="/" element={<Home/>}/>
+                      <Route path="/cart" element={<Cart/>}/>
                       <Route path="*" element={<NotFoundBlock/>}/>
                   </Routes>
               </div>

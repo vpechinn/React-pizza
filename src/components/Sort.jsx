@@ -1,24 +1,34 @@
-import React, {useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-function Sort({value, setActiveSort}) {
+export const sortList = [
+  { name: 'популярности', sortProperty: 'rating' },
+  { name: 'популярности (убыв)', sortProperty: '-rating' },
+  { name: 'цене', sortProperty: 'price' },
+  { name: 'цене (убыв)', sortProperty: '-price' },
+];
 
-    const sortList = [
-        {name: 'популярности', sortProperty: 'rating'},
-        {name: 'популярности (убыв)', sortProperty: '-rating'},
-        {name: 'цене', sortProperty: 'price'},
-        {name: 'цене (убыв)', sortProperty: '-price'}
-    ]
-    const [popupHidden, setPopupHidden] = useState(false)
+function Sort({ value, setActiveSort }) {
+  const sortRef = useRef(null);
 
+  const [popupHidden, setPopupHidden] = useState(false);
+  const onClickSort = (obj) => {
+    setActiveSort(obj);
+    setPopupHidden(!popupHidden);
+  };
 
+  useEffect(() => {
+    const handleClosePopUp = (event) => {
+      if (!event.composedPath().includes(sortRef.current)) {
+        setPopupHidden(false);
+      }
+    };
+    document.body.addEventListener('click', handleClosePopUp);
 
-    const onClickSort = (obj) => {
-        setActiveSort(obj)
-        setPopupHidden(!popupHidden)
-    }
+    return () => document.body.removeEventListener('click', handleClosePopUp);
+  }, []);
 
   return (
-    <div className="sort">
+    <div ref={sortRef} className="sort">
       <div className="sort__label">
         <svg
           width="10"
@@ -34,15 +44,20 @@ function Sort({value, setActiveSort}) {
         <b>Сортировка по:</b>
         <span onClick={() => setPopupHidden(!popupHidden)}>{value.name}</span>
       </div>
-        {popupHidden && (
-            <div className="sort__popup">
-                <ul>
-                    {sortList.map((obj, index) =>
-                        <li onClick={() => onClickSort(obj)} key={index} className={value.sortProperty === obj.sortProperty  ? "active" : ""}>{obj.name} </li>
-                    )}
-                </ul>
-            </div>
-        )}
+      {popupHidden && (
+        <div className="sort__popup">
+          <ul>
+            {sortList.map((obj, index) => (
+              <li
+                onClick={() => onClickSort(obj)}
+                key={index}
+                className={value.sortProperty === obj.sortProperty ? 'active' : ''}>
+                {obj.name}{' '}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
